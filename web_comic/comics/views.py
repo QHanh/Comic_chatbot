@@ -10,7 +10,7 @@ def story_list(request):
     return render(request, "story_list.html", {"stories": stories})
 
 @csrf_exempt
-def chatbot_view(request):
+def chatbot_api(request):
     """
     API nhận query từ người dùng và trả về kết quả từ chatbot.
     """
@@ -28,7 +28,7 @@ def chatbot_view(request):
         except json.JSONDecodeError:
             return JsonResponse({"error": "Dữ liệu không hợp lệ"}, status=400)
 
-    return JsonResponse({"error": "Chỉ hỗ trợ phương thức POST"}, status=405)
+    return JsonResponse({"error": "Đã có lỗi xảy ra"}, status=405)
 
 def chatbot_page(request):
     return render(request, "chat_bot.html")
