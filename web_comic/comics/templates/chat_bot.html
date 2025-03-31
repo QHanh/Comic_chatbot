@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot Truyện</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/chatbot.css">
+</head>
+<body>
+    <div class="chat-container">
+        <h2>Chatbot Tìm Truyện</h2>
+        <div class="chat-box" id="chat-box">
+            <div class="message bot-message">
+                <span>Xin chào! Nhập tên hoặc mô tả truyện bạn muốn tìm.</span>
+            </div>
+        </div>
+        <div class="input-box">
+            <input type="text" id="user-input" placeholder="Nhập tin nhắn...">
+            <button id="send-btn"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("send-btn").addEventListener("click", sendMessage);
+        document.getElementById("user-input").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") sendMessage();
+        });
+
+        function sendMessage() {
+            let userInput = document.getElementById("user-input").value.trim();
+            if (!userInput) return;
+
+            let chatBox = document.getElementById("chat-box");
+            let userMessage = `<div class="message user-message"><span>${userInput}</span></div>`;
+            chatBox.innerHTML += userMessage;
+            document.getElementById("user-input").value = "";
+
+            fetch("/api/chatbot/", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ query: userInput })
+            })
+            .then(response => response.json())
+            .then(data => {
+                let botMessage = `<div class="message bot-message"><span>${data.answer}</span></div>`;
+                chatBox.innerHTML += botMessage;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            })
+            .catch(error => console.error("Lỗi:", error));
+        }
+    </script>
+</body>
+</html>
