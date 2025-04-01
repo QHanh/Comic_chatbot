@@ -132,7 +132,6 @@ def get_combined_context(query: str, db_path: str) -> Dict[str, str]:
          print(traceback.format_exc())
          raise RuntimeError(f"Lỗi khi truy xuất ngữ cảnh kết hợp: {e}")
 
-    # 6. Xây dựng ngữ cảnh từ kết quả kết hợp
     try:
         context = build_context(relevant_chunks)
     except Exception as e:
@@ -161,13 +160,11 @@ def main(query):
         print("Kết nối đến Ollama thành công.")
     except Exception as e:
         print(f"\nLỖI KẾT NỐI OLLAMA: {e}")
-        print("Hãy đảm bảo Ollama đang chạy và model 'llama3.1' đã được tải (`ollama run llama3.1`).")
         raise RuntimeError(f"Không thể kết nối đến Ollama: {e}")
 
     str_parser = StrOutputParser()
 
     rag_chain = (
-        # Sử dụng hàm mới get_combined_context
         RunnableLambda(lambda inputs: get_combined_context(inputs['query'], inputs['db_path']))
         | rag_prompt
         | llm
@@ -180,14 +177,12 @@ def main(query):
     except Exception as e:
         print(f"\nLỗi trong quá trình thực thi RAG chain: {e}")
         print(traceback.format_exc())
-        return "Xin lỗi, đã có lỗi xảy ra trong quá trình xử lý yêu cầu của bạn."
+        return "Đã có lỗi xảy ra trong quá trình xử lý yêu cầu của bạn."
 
 if __name__ == "__main__":
     test_query = "truyện về cậu bé rồng" 
-    print(f"--- Bắt đầu thử nghiệm với query: '{test_query}' ---")
     try:
         final_answer = main(test_query)
-        print("\n--- Kết quả cuối cùng ---")
         print(final_answer)
     except Exception as e:
         print(f"\n--- Đã xảy ra lỗi không mong muốn trong main: {e} ---")
